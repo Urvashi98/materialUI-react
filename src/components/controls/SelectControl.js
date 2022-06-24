@@ -1,5 +1,6 @@
 import {
   FormControl,
+  FormHelperText,
   InputLabel,
   makeStyles,
   MenuItem,
@@ -18,11 +19,11 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function SelectControl(props) {
-  const { label, name, value, onChangeHandler, selectList } = props;
+  const { label, name, value, onChangeHandler, selectList, error = null} = props;
   const classes = useStyles();
 
   return (
-    <FormControl variant="outlined" className={classes.formControl}>
+    <FormControl variant="outlined" className={classes.formControl} {...(error && {error: true}) }>
       <InputLabel>{label}</InputLabel>
       <Select
         value={value}
@@ -34,9 +35,10 @@ export default function SelectControl(props) {
           <em>None</em>
         </MenuItem>
         {selectList?.map((item, index) => (
-          <MenuItem value={item.id}>{item.title}</MenuItem>
+          <MenuItem value={item.id} key={item.id}>{item.title}</MenuItem>
         ))}
       </Select>
+      {error && <FormHelperText> {error} </FormHelperText>}
     </FormControl>
   );
 }
