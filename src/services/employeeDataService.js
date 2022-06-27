@@ -5,9 +5,9 @@ const KEYS ={
 
 export function getDepartmentList() {
   return [
-    { id: "technology", title: "Technology" },
-    { id: "hr", title: "HR" },
-    { id: "appSupport", title: "App Support" },
+    { id: "1", title: "Technology" },
+    { id: "2", title: "HR" },
+    { id: "3", title: "App Support" },
   ];
 }
 
@@ -41,5 +41,15 @@ export function getEmployees() {
   if(localStorage.getItem(KEYS.employees) === null)
     localStorage.setItem(KEYS.employees, JSON.stringify([]))
   
-  return JSON.parse(localStorage.getItem(KEYS.employees))
+  let employees = JSON.parse(localStorage.getItem(KEYS.employees)); //convert string to Object and send it again!
+  //map deptID to deptName
+  let departments = getDepartmentList();
+  
+  return employees.map((e) => ({
+    ...e,
+    departmnentTitle: departments[e.deptId-1].title,
+  }));
+  // console.log(emp2);
+
+
 }

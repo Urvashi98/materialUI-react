@@ -7,8 +7,7 @@ import Input from "../../components/controls/Input";
 import RadioGroupControl from "../../components/controls/RadioGroupControl";
 import SelectControl from "../../components/controls/SelectControl";
 import { Form, useForm } from "../../customHooks/useForm";
-import * as employeeService from "../../services/employeeDataService";
-import {insertEmployee} from "../../services/employeeDataService"
+import * as EmployeeFunc from "../../services/employeeDataService";
 const initialValues = {
   id: 0,
   fullName: "",
@@ -20,43 +19,48 @@ const initialValues = {
   isPermanent: false,
 };
 
-function EmployeeForm() {
-  
+function EmployeeForm({ submitOrEdit }) {
   const validate = (fieldValues = formValues) => {
-    let temp = {...errors}; //preserve errors and only update required ones! 
-    if('fullName' in fieldValues)
+    let temp = { ...errors }; //preserve errors and only update required ones!
+    if ("fullName" in fieldValues)
       // temp.fullName = formValues.fullName ? "" : "First Name is required"; FIRST TRY
-      temp.fullName = fieldValues.fullName ? "" : "First Name is required";  //used fieldValues because updated form Values are not reflected directly in UI.
-    if('email' in fieldValues)
-      temp.email = (/$^|.+@.+..+/).test(fieldValues.email) ? "" : "Email is not valid";
-    if('deptId' in fieldValues)
-      temp.deptId = fieldValues.deptId.length !== 0 ? "" : "Department is required";
-    if('mobile' in fieldValues)
-      temp.mobile = fieldValues.mobile.length === 10 ? "" : "Mobile number must be 10 digits";
-    
+      temp.fullName = fieldValues.fullName ? "" : "First Name is required"; //used fieldValues because updated form Values are not reflected directly in UI.
+    if ("email" in fieldValues)
+      temp.email = /$^|.+@.+..+/.test(fieldValues.email)
+        ? ""
+        : "Email is not valid";
+    if ("deptId" in fieldValues)
+      temp.deptId =
+        fieldValues.deptId.length !== 0 ? "" : "Department is required";
+    if ("mobile" in fieldValues)
+      temp.mobile =
+        fieldValues.mobile.length === 10
+          ? ""
+          : "Mobile number must be 10 digits";
+
     //set the errors
     setErrors({
-      ...temp
+      ...temp,
     });
 
     // return if valid or not on submit
-    return Object.values(temp).every(x => x === ""); //condition for every property in object 
-  }
+    return Object.values(temp).every((x) => x === ""); //condition for every property in object
+  };
 
   //extract from customHoook!
-  const { formValues, errors, setErrors, handleChange, resetForm } = useForm(initialValues, true, validate);
-
+  const { formValues, errors, setErrors, handleChange, resetForm } = useForm(
+    initialValues,
+    true,
+    validate
+  );
 
   const onSubmitHandler = (e) => {
     e.preventDefault();
-    if(validate()){
-
-      alert('in submit');
+    if (validate()) {
       console.log(formValues);
-      insertEmployee(formValues)
-      resetForm();
+      submitOrEdit(formValues, resetForm); // send to parent component
     }
-  }
+  };
 
   return (
     <Form onSubmit={onSubmitHandler}>
@@ -69,7 +73,7 @@ function EmployeeForm() {
             value={formValues.fullName}
             onChangeHandler={handleChange}
             autocomplete="off"
-            error= {errors.fullName}
+            error={errors.fullName}
           />
           <Input
             variant="outlined"
@@ -77,7 +81,7 @@ function EmployeeForm() {
             name="email"
             value={formValues.email}
             onChangeHandler={handleChange}
-            error= {errors.email}
+            error={errors.email}
           />
           <Input
             variant="outlined"
@@ -94,15 +98,15 @@ function EmployeeForm() {
             name="gender"
             value={formValues.gender}
             onChangeHandler={handleChange}
-            radioList={employeeService.getGenderList()}
+            radioList={EmployeeFunc.getGenderList()}
           />
           <SelectControl
             name="deptId"
             label="Department"
             value={formValues.deptId}
             onChangeHandler={handleChange}
-            selectList={employeeService.getDepartmentList()}
-            error= {errors.deptId}
+            selectList={EmployeeFunc.getDepartmentList()}
+            error={errors.deptId}
           />
           <DatePickerControl
             name="hireDate"
@@ -121,7 +125,12 @@ function EmployeeForm() {
           <Grid xs={6}></Grid>
           <Grid xs={6}>
             <ButtonControl type="submit" text="Submit" />
-            <ButtonControl text="Reset" type="reset" variant='outlined' onClickHandler= {resetForm}/>
+            <ButtonControl
+              text="Reset"
+              type="reset"
+              variant="outlined"
+              onClickHandler={resetForm}
+            />
           </Grid>
         </Grid>
       </Grid>
