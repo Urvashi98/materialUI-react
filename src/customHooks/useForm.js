@@ -12,7 +12,6 @@ export function useForm(initialValues, validateOnChange = false, validate) {
 
     //validate on change
     if(validateOnChange){
-      console.log('in validate on change hook', {[name]: value});
       validate({[name]: value}); // pass the 
     }
   };

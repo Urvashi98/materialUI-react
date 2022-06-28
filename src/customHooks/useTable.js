@@ -5,9 +5,10 @@ const useStyles = makeStyles((theme) => ({
     table: {
       marginTop: theme.spacing(3),
       '& thead th': {
-        fontWeight: '400',
+        fontWeight: '600',
+        fontSize: '15px',
         color: 'white',
-        backgroundColor: "#253053",
+        backgroundColor: theme.palette.primary.main,
       },
       '& tbody td': {
         fontWeight: '100'

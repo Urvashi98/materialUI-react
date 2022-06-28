@@ -14,7 +14,7 @@ export default function DatePickerControl(props) {
         name, value
     }
 })
-console.log('convert to date event', convertToNameValue(name, value));
+
   return (
     <MuiPickersUtilsProvider utils={DateFnsUtils}>
       <KeyboardDatePicker

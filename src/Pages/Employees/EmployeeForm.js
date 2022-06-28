@@ -1,5 +1,5 @@
 import { Grid } from "@material-ui/core";
-import React from "react";
+import React, { useEffect } from "react";
 import ButtonControl from "../../components/controls/ButtonControl";
 import CheckboxControl from "../../components/controls/CheckboxControl";
 import DatePickerControl from "../../components/controls/DatePickerControl";
@@ -19,7 +19,7 @@ const initialValues = {
   isPermanent: false,
 };
 
-function EmployeeForm({ submitOrEdit }) {
+function EmployeeForm({ submitOrEdit, editRecord }) {
   const validate = (fieldValues = formValues) => {
     let temp = { ...errors }; //preserve errors and only update required ones!
     if ("fullName" in fieldValues)
@@ -48,16 +48,22 @@ function EmployeeForm({ submitOrEdit }) {
   };
 
   //extract from customHoook!
-  const { formValues, errors, setErrors, handleChange, resetForm } = useForm(
-    initialValues,
-    true,
-    validate
-  );
+  const {
+    formValues,
+    setFormValues,
+    errors,
+    setErrors,
+    handleChange,
+    resetForm,
+  } = useForm(initialValues, true, validate);
+
+  useEffect(() => {
+    if (editRecord) setFormValues(editRecord);
+  }, [editRecord]);
 
   const onSubmitHandler = (e) => {
     e.preventDefault();
     if (validate()) {
-      console.log(formValues);
       submitOrEdit(formValues, resetForm); // send to parent component
     }
   };

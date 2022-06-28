@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import EmployeeForm from "./EmployeeForm";
 import PeopleAltTwoToneIcon from "@material-ui/icons/PeopleAltTwoTone";
 import PageHeader from "../../components/PageHeader";
@@ -15,6 +15,8 @@ import * as EmployeeFunc from "../../services/employeeDataService";
 import ButtonControl from "../../components/controls/ButtonControl";
 import AddIcon from "@material-ui/icons/Add";
 import PopUp from "../../components/PopUp";
+import { EditOutlined, DeleteOutlineSharp } from "@material-ui/icons";
+import ActionButton from "../../components/controls/ActionButton";
 
 const useStyles = makeStyles((theme) => ({
   employeeform: {
@@ -24,6 +26,16 @@ const useStyles = makeStyles((theme) => ({
   toolBar: {
     flexDirection: "row-reverse",
   },
+  actionMenu: {
+    display: "flex",
+    justifyContent: "space-between",
+    //margin: "0 1rem",
+    cursor: "pointer",
+    "& svg:hover": {
+      //when hover the element
+      backgroundColor: "#f2f2f2",
+    },
+  },
 }));
 
 const headCells = [
@@ -31,6 +43,7 @@ const headCells = [
   { id: "email", label: "Employee Email Address" },
   { id: "mobile", label: "Employee Mobile" },
   { id: "department", label: "Employee Department" },
+  { id: "actions", label: "Perform Actions" },
 ];
 
 function Employees() {
@@ -38,15 +51,31 @@ function Employees() {
 
   const [open, setOpen] = useState(false);
   const [records, setRecords] = useState(EmployeeFunc.getEmployees());
+  const [recordForEdit, setrecordForEdit] = useState(null);
   const { TblContainer, TblHead } = useTable(records, headCells);
 
   //Add or Edit -> moved from Employee form
   const submitOrEdit = (employee, resetForm) => {
-    EmployeeFunc.insertEmployee(employee); // push to localstorage
+    //check if record already exists in the data
+    const isExists = records.filter((r) => r.id === employee.id);
+
+    if (isExists) {
+      EmployeeFunc.updateEmployee(employee);
+    } else {
+      //insert it
+      EmployeeFunc.insertEmployee(employee); // push to localstorage
+    }
     resetForm();
     setOpen(!open);
-  }
+    setRecords(EmployeeFunc.getEmployees());
+  };
 
+  const handleRecordForEdit = (item) => {
+    setrecordForEdit(item);
+    setOpen(true);
+  };
+
+  useEffect(() => {});
   return (
     <>
       <PageHeader
@@ -61,7 +90,10 @@ function Employees() {
             text="Add New"
             size="small"
             variant="outlined"
-            onClickHandler={() => setOpen(!open)}
+            onClickHandler={() => {
+              setOpen(!open);
+              setrecordForEdit(null); //should set this otherwise may hold older non-updated record
+            }}
             startIcon={<AddIcon />}
           />
         </Toolbar>
@@ -77,6 +109,19 @@ function Employees() {
                 <TableCell>{item.email}</TableCell>
                 <TableCell>{item.mobile}</TableCell>
                 <TableCell>{item.departmnentTitle}</TableCell>
+                <TableCell>
+                  <div className={classes.actionMenu}>
+                    <ActionButton
+                      color="primary"
+                      onClick={() => handleRecordForEdit(item)}
+                    >
+                      <EditOutlined />
+                    </ActionButton>
+                    <ActionButton color="primary">
+                      <DeleteOutlineSharp />
+                    </ActionButton>
+                  </div>
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>
@@ -88,10 +133,13 @@ function Employees() {
           setOpen(!open);
         }}
         title="Employee Form"
-        children={<EmployeeForm 
-          submitOrEdit = {submitOrEdit}
-        />}
-        maxWidth='md'
+        children={
+          <EmployeeForm
+            submitOrEdit={submitOrEdit}
+            editRecord={recordForEdit}
+          />
+        }
+        maxWidth="md"
       />
     </>
   );
