@@ -33,6 +33,16 @@ export function updateEmployee(data) {
   localStorage.setItem(KEYS.employees,JSON.stringify(employees));
 }
 
+export function deleteEmployee(data) {
+  let employees = getEmployees();
+  console.log('all employees',typeof employees);
+  let recordToDelete = employees.filter((r) => r.id === data.id);
+  console.log("record to delete", recordToDelete);
+   employees.splice(recordToDelete[0], 1);
+  console.log("updated employees", employees.splice(recordToDelete[0], 1));
+  localStorage.setItem(KEYS.employees,JSON.stringify(employees));
+}
+
 function generateID() {
   if(localStorage.getItem(KEYS.employeeId) === null){
     localStorage.setItem(KEYS.employeeId, '0')
